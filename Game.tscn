@@ -1,0 +1,131 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
+[ext_resource path="res://terrain/data.hterrain" type="Resource" id=2]
+[ext_resource path="res://addons/zylann.hterrain/hterrain.gd" type="Script" id=3]
+[ext_resource path="res://addons/zylann.hterrain/hterrain_texture_set.gd" type="Script" id=4]
+[ext_resource path="res://materials/Game_slot0_albedo_bump.packed_tex" type="Texture" id=5]
+[ext_resource path="res://materials/Game_slot0_normal_roughness.packed_tex" type="Texture" id=6]
+[ext_resource path="res://materials/Game_slot1_normal_roughness.packed_tex" type="Texture" id=7]
+[ext_resource path="res://materials/Game_slot1_albedo_bump.packed_tex" type="Texture" id=8]
+[ext_resource path="res://zombie.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Fist.gd" type="Script" id=10]
+[ext_resource path="res://Spawner.gd" type="Script" id=11]
+
+[sub_resource type="SphereMesh" id=1]
+
+[sub_resource type="SphereShape" id=5]
+
+[sub_resource type="SphereMesh" id=3]
+
+[sub_resource type="Resource" id=4]
+script = ExtResource( 4 )
+mode = 0
+textures = [ [ ExtResource( 5 ), ExtResource( 8 ) ], [ ExtResource( 6 ), ExtResource( 7 ) ] ]
+
+[sub_resource type="PhysicsMaterial" id=10]
+rough = true
+
+[sub_resource type="BoxShape" id=7]
+
+[sub_resource type="CubeMesh" id=8]
+
+[sub_resource type="SpatialMaterial" id=9]
+albedo_color = Color( 0.270588, 0.133333, 0, 1 )
+
+[node name="Scene" type="Spatial"]
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.999978, 0.00670201, 0, -0.00670201, 0.999978, 0, 0, 0, 1, 139.854, 51.2818, 232.293 )
+
+[node name="Configuration" parent="Player" index="0"]
+color_space = 0
+refresh_rate = 0.0
+
+[node name="LeftHandController" parent="Player" index="2"]
+visible = true
+
+[node name="MeshInstance" type="MeshInstance" parent="Player/LeftHandController" index="0"]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="LeftHandArea" type="Area" parent="Player/LeftHandController" index="1"]
+script = ExtResource( 10 )
+hand = "left"
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/LeftHandController/LeftHandArea"]
+transform = Transform( 0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0, 0 )
+shape = SubResource( 5 )
+
+[node name="RightHandController" parent="Player" index="3"]
+visible = true
+
+[node name="MeshInstance" type="MeshInstance" parent="Player/RightHandController" index="0"]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="RightHandArea" type="Area" parent="Player/RightHandController" index="1"]
+script = ExtResource( 10 )
+hand = "right"
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/RightHandController/RightHandArea"]
+transform = Transform( 0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0, 0 )
+shape = SubResource( 5 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -4.83049, 2.38916, 2.57294 )
+light_color = Color( 1, 0.847059, 0.254902, 1 )
+light_energy = 5.257
+shadow_enabled = true
+
+[node name="HTerrain" type="Spatial" parent="."]
+script = ExtResource( 3 )
+_terrain_data = ExtResource( 2 )
+chunk_size = 32
+collision_enabled = true
+collision_layer = 2
+collision_mask = 1
+shader_type = "Classic4Lite"
+custom_shader = null
+custom_globalmap_shader = null
+texture_set = SubResource( 4 )
+shader_params/u_ground_uv_scale = 20
+shader_params/u_depth_blending = true
+shader_params/u_triplanar = false
+shader_params/u_tile_reduction = Plane( 0, 0, 0, 0 )
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 50.0021, 230.007 )
+collision_layer = 2
+physics_material_override = SubResource( 10 )
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 8, 0, 0, 0, 1, 0, 0, 0, 8, 0, 0, 0 )
+shape = SubResource( 7 )
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody/CollisionShape"]
+mesh = SubResource( 8 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 9 )
+
+[node name="Spawner" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 133.416, 51.2784, 230 )
+script = ExtResource( 11 )
+
+[node name="Timer" type="Timer" parent="Spawner"]
+wait_time = 10.0
+autostart = true
+
+[node name="Zombies" type="Spatial" parent="."]
+
+[node name="zombie" parent="Zombies" instance=ExtResource( 9 )]
+transform = Transform( 0.0237866, 0, -0.999717, 0, 1, 0, 0.999717, 0, 0.0237866, 139.803, 52.368, 225.309 )
+
+[connection signal="area_entered" from="Player/LeftHandController/LeftHandArea" to="Player/LeftHandController/LeftHandArea" method="_on_Fist_area_entered"]
+[connection signal="button_pressed" from="Player/RightHandController" to="Player/RightHandController/RightHandArea" method="_on_RightHandController_button_pressed"]
+[connection signal="area_entered" from="Player/RightHandController/RightHandArea" to="Player/RightHandController/RightHandArea" method="_on_Fist_area_entered"]
+[connection signal="timeout" from="Spawner/Timer" to="Spawner" method="_on_Timer_timeout"]
+
+[editable path="Player"]

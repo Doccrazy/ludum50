@@ -1,0 +1,8 @@
+{
+	"contains_albedo": false,
+	"resolution": 512,
+	"src": {
+		"a": "res://materials/grass_orm.png",
+		"rgb": "res://materials/grass_normal.png"
+	}
+}
